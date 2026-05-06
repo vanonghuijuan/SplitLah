@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SplitLah — Singapore Bill Splitter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <h1 class="logo">Split<span>Lah</span></h1>
+      <p class="tagline">Fair splits, Singapore style</p>
+    </header>
+
+    <!-- Bill Details -->
+    <section class="section" id="section-bill">
+      <h2>Bill Details</h2>
+
+      <div class="input-group">
+        <label for="subtotal-input">Subtotal</label>
+        <div class="currency-input">
+          <span class="currency-symbol">S$</span>
+          <input type="number" id="subtotal-input" min="0" step="0.01" placeholder="0.00" inputmode="decimal">
+        </div>
+      </div>
+
+      <div class="toggles">
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <span class="toggle-label">Service Charge</span>
+            <span class="toggle-rate">10%</span>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="svc-toggle">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <span class="toggle-label">GST</span>
+            <span class="toggle-rate">9%</span>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="gst-toggle">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="breakdown" id="breakdown">
+        <div class="breakdown-row">
+          <span>Subtotal</span>
+          <span id="breakdown-subtotal">S$0.00</span>
+        </div>
+        <div class="breakdown-row charge-row hidden" id="svc-row">
+          <span>Service Charge (10%)</span>
+          <span id="breakdown-svc">S$0.00</span>
+        </div>
+        <div class="breakdown-row charge-row hidden" id="gst-row">
+          <span>GST (9%)</span>
+          <span id="breakdown-gst">S$0.00</span>
+        </div>
+        <div class="breakdown-row total-row">
+          <span>Grand Total</span>
+          <span id="breakdown-total">S$0.00</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- People -->
+    <section class="section" id="section-people">
+      <h2>Who's Splitting?</h2>
+
+      <div class="add-person">
+        <input type="text" id="person-input" placeholder="Enter name" maxlength="30">
+        <button class="btn btn-add" id="btn-add-person">Add</button>
+      </div>
+
+      <ul class="people-list" id="people-list"></ul>
+      <p class="hint" id="people-hint">Add at least 2 people</p>
+    </section>
+
+    <!-- Split Mode -->
+    <section class="section" id="section-mode">
+      <h2>How to Split?</h2>
+
+      <div class="mode-cards">
+        <button class="mode-card selected" data-mode="equal">
+          <div class="mode-icon">÷</div>
+          <div class="mode-info">
+            <div class="mode-title">Equal</div>
+            <div class="mode-desc">Split the total equally</div>
+          </div>
+        </button>
+        <button class="mode-card" data-mode="perItem">
+          <div class="mode-icon">🧾</div>
+          <div class="mode-info">
+            <div class="mode-title">Per Item</div>
+            <div class="mode-desc">Assign items to people</div>
+          </div>
+        </button>
+        <button class="mode-card" data-mode="custom">
+          <div class="mode-icon">✏️</div>
+          <div class="mode-info">
+            <div class="mode-title">Custom</div>
+            <div class="mode-desc">Set amounts or percentages</div>
+          </div>
+        </button>
+      </div>
+    </section>
+
+    <!-- Per-Item assignment (shown when mode = perItem) -->
+    <section class="section hidden" id="section-perItem">
+      <h2>Add Items</h2>
+      <div class="add-item">
+        <input type="text" id="item-name-input" placeholder="Item name" maxlength="40">
+        <div class="currency-input currency-input-sm">
+          <span class="currency-symbol">S$</span>
+          <input type="number" id="item-price-input" min="0" step="0.01" placeholder="0.00" inputmode="decimal">
+        </div>
+        <button class="btn btn-add" id="btn-add-item">Add</button>
+      </div>
+      <div class="items-list" id="items-list"></div>
+      <p class="hint" id="items-hint">Add items and assign them to people</p>
+      <div class="item-totals" id="item-totals">
+        <div class="item-subtotal-row hidden" id="item-subtotal-row">
+          <span>Items subtotal:</span>
+          <span id="item-subtotal-display">S$0.00</span>
+        </div>
+        <div class="item-charges-row hidden" id="item-charges-row">
+          <span id="item-charges-label">+ Charges:</span>
+          <span id="item-charges-display">S$0.00</span>
+        </div>
+        <div class="item-grand-row hidden" id="item-grand-row">
+          <span>Items grand total:</span>
+          <span id="item-grand-display">S$0.00</span>
+        </div>
+        <div class="item-discrepancy hidden" id="item-discrepancy"></div>
+      </div>
+    </section>
+
+    <!-- Custom assignment (shown when mode = custom) -->
+    <section class="section hidden" id="section-custom">
+      <h2>Custom Split</h2>
+      <div class="custom-mode-toggle">
+        <button class="custom-tab active" data-custom="amount">By Amount</button>
+        <button class="custom-tab" data-custom="percent">By Percentage</button>
+      </div>
+      <div class="custom-allocations" id="custom-allocations"></div>
+      <div class="remaining-row" id="remaining-row">
+        <span>Remaining:</span>
+        <span id="remaining-display">S$0.00</span>
+      </div>
+      <button class="btn btn-secondary" id="btn-even-split">Split Evenly</button>
+    </section>
+
+    <!-- Results -->
+    <section class="section section-results hidden" id="section-results">
+      <h2>Each Person Owes</h2>
+      <div class="result-cards" id="result-cards"></div>
+      <div class="total-check" id="total-check"></div>
+      <div class="result-actions">
+        <button class="btn btn-secondary" id="btn-copy">Copy Summary</button>
+        <p class="copy-feedback hidden" id="copy-feedback">Copied!</p>
+      </div>
+    </section>
+
+    <button class="btn btn-reset" id="btn-start-over">Start Over</button>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
